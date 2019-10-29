@@ -37,4 +37,4 @@ contract ElectionContract {
         numberOfVoters++;
     }
 
-  }
+}
