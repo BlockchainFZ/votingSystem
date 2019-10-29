@@ -25,7 +25,7 @@ contract ElectionContract {
     uint public numberOfVoters;
 
     Election public election;
-    string speaker;
+    
 
     function _registerCandidate(string _name, string _party) public {
         candidates.push(Candidate(_name, _party));
