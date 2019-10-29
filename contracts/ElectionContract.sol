@@ -1,4 +1,5 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.8;
+
 
 contract ElectionContract {
 
@@ -25,23 +26,15 @@ contract ElectionContract {
     uint public numberOfVoters;
 
     Election public election;
-    
 
-    function _registerCandidate(string _name, string _party) public {
+    function _registerCandidate(string memory _name, string memory _party) public {
         candidates.push(Candidate(_name, _party));
         numberOfCandidates++;
     }
 
-    function _registerVoter(string _name, uint _age) public {
+    function _registerVoter(string memory _name, uint _age) public {
         voters.push(Voter(_name,_age));
         numberOfVoters++;
     }
 
-    function initializeElection(uint256 _registrationPeriod, uint256 _votingPeriod, uint256 _endTime) public {
-        election.registrationPeriod = _registrationPeriod;
-        election.votingPeriod = _votingPeriod;
-        election.endTime = _endTime;
-    }
-
-
-}
+  }
