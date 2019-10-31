@@ -3,16 +3,15 @@ var ElectionContract = artifacts.require("ElectionContract");
 contract('Flight Surety Tests', async (accounts) => {
 
     let owner = accounts[0];
+    let account2 = accounts[1];
 
 
-    console.log(owner);
-
-
-    it(`returns contract owner`, async () => {
+    it(`confirms contract owner`, async () => {
       let data = await ElectionContract.deployed();
-      let status = await data.isOwner.call();
-
+      let status = await data._isOwner(owner);
       assert.equal(status, true, "Not the contract owner");
+      status = await data._isOwner(account2);
+      assert.equal(status, false, "Contract owner required");
 
     });
 
@@ -24,7 +23,7 @@ contract('Flight Surety Tests', async (accounts) => {
       await data._registerCandidate("Boris Johnson", "Tory");
       numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
-      console.log('numberOfCandidates',numberOfCandidates.toNumber());
+
 
     });
   });
