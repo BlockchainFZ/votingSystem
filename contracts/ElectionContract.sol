@@ -1,7 +1,10 @@
 pragma solidity ^0.5.8;
 
+//import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
+//import "https://github.com/OpenZeppelin/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
-contract ElectionContract {
+contract ElectionContract is Ownable {
 
     struct Candidate {
         string name;
@@ -27,12 +30,12 @@ contract ElectionContract {
 
     Election public election;
 
-    function _registerCandidate(string memory _name, string memory _party) public {
+    function _registerCandidate(string memory _name, string memory _party) public onlyOwner{
         candidates.push(Candidate(_name, _party));
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public {
+    function _registerVoter(string memory _name, uint _age) public onlyOwner{
         voters.push(Voter(_name,_age));
         numberOfVoters++;
     }
