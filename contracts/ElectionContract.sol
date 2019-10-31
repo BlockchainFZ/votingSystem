@@ -30,6 +30,7 @@ contract ElectionContract is Ownable {
 
     Election public election;
 
+
     function _registerCandidate(string memory _name, string memory _party) public onlyOwner{
         candidates.push(Candidate(_name, _party));
         numberOfCandidates++;
@@ -38,6 +39,10 @@ contract ElectionContract is Ownable {
     function _registerVoter(string memory _name, uint _age) public onlyOwner{
         voters.push(Voter(_name,_age));
         numberOfVoters++;
+    }
+
+    function _returnOwner() public returns (address){
+      return owner();
     }
 
 }
