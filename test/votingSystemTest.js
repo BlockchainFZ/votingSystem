@@ -1,3 +1,5 @@
+var ElectionContract = artifacts.require("ElectionContract");
+
 contract('Flight Surety Tests', async (accounts) => {
 
     let owner = accounts[0];
@@ -13,4 +15,8 @@ contract('Flight Surety Tests', async (accounts) => {
     console.log(airline4);
     console.log(airline5);
     console.log(airline6);
+
+    it(`returns contract owner`, async () => {
+      let data = await ElectionContract.deployed();
+    })
   });
