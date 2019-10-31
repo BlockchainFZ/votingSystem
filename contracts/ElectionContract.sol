@@ -41,8 +41,10 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
-    function _returnOwner() public returns (address){
-      return owner();
+    function _isOwner(address _address) public view returns(bool) {
+      return _address == owner();
     }
+
+    
 
 }
