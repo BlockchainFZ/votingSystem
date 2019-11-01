@@ -45,6 +45,6 @@ contract ElectionContract is Ownable {
       return _address == owner();
     }
 
-    
+
 
 }
