@@ -17,10 +17,12 @@ contract ElectionContract is Ownable {
     }
 
     struct Election {
+        uint256 initTime;
         uint256 registrationPeriod;
         uint256 votingPeriod;
         uint256 endTime;
     }
+    Election public election;
 
     Candidate[] public candidates;
     uint public numberOfCandidates;
@@ -28,8 +30,16 @@ contract ElectionContract is Ownable {
     Voter[] public voters;
     uint public numberOfVoters;
 
-    Election public election;
+    uint256 lastUpdated;
 
+    constructor() public {
+     election = Election(now, 1 days, 1 days, 1 days);
+     lastUpdated = now;
+    }
+
+    function _isOwner(address _address) public view returns(bool) {
+      return _address == owner();
+    }
 
     function _registerCandidate(string memory _name, string memory _party) public onlyOwner{
         candidates.push(Candidate(_name, _party));
@@ -41,10 +51,9 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
-    function _isOwner(address _address) public view returns(bool) {
-      return _address == owner();
+    function _remainingRegistrationPeriod() public returns (uint256){
+        return lastUpdated;
     }
-
 
 
 }
