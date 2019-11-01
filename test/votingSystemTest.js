@@ -49,6 +49,12 @@ contract('Flight Surety Tests', async (accounts) => {
 
       });
 
+    it(`returns remaining registration period`, async () => {
+      let data = await ElectionContract.deployed();
+      let remainingRegPeriod = await data._remainingRegistrationPeriod.call();
+      console.log("remainingRegPeriod ",remainingRegPeriod.toNumber());
+    });
+
 
 
   });
