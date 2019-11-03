@@ -7,6 +7,7 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract ElectionContract is Ownable {
 
     using SafeMath for uint256;
+
     struct Candidate {
         string name;
         string party;
@@ -22,6 +23,9 @@ contract ElectionContract is Ownable {
         uint256 registrationPeriod;
         uint256 votingPeriod;
         uint256 endTime;
+        bool closeRegistrationPeriod;
+        bool closeVotingPeriod;
+        bool closeElectionPeriod;
     }
     Election public election;
 
@@ -31,10 +35,8 @@ contract ElectionContract is Ownable {
     Voter[] private voters;
     uint private numberOfVoters;
 
-
-
     constructor() public {
-     election = Election(now, 1 days, 1 days, 1 days);
+     election = Election(now, 1 days, 2 days, 2 days, false, false, false);
 
     }
 
@@ -44,7 +46,7 @@ contract ElectionContract is Ownable {
     }
 
     modifier voteIsOpen()  {
-        require(election.electionTimeStamp > (election.electionTimeStamp + election.votingPeriod));
+        require(now < election.electionTimeStamp.add(election.votingPeriod));
     _;
     }
 
@@ -57,12 +59,12 @@ contract ElectionContract is Ownable {
       return _address == owner();
     }
 
-    function _registerCandidate(string memory _name, string memory _party) public onlyOwner isvalidRegistrationPeriod {
+    function _registerCandidate(string memory _name, string memory _party) public isvalidRegistrationPeriod {
         candidates.push(Candidate(_name, _party));
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public onlyOwner voteIsOpen isvalidVotingPeriod{
+    function _registerVoter(string memory _name, uint _age) public onlyOwner voteIsOpen {
         voters.push(Voter(_name,_age));
         numberOfVoters++;
     }
@@ -75,5 +77,19 @@ contract ElectionContract is Ownable {
     function _remainingVotingPeriod() public view returns (uint256) {
         return now.sub(election.electionTimeStamp);
     }
+
+    function _closeRegistrationPeriod() public returns (bool) {
+            return election.closeRegistrationPeriod = true;
+    }
+
+    function _closeVotingPeriod() public returns (bool) {
+            return election.closeVotingPeriod = true;
+    }
+
+    function _closeElection() public returns (bool) {
+            return election.closeElectionPeriod = false;
+    }
+
+
 
   }
