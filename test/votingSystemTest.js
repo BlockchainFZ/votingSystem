@@ -15,7 +15,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     });
 
-    it(`Allows any address to add a candidate`, async () => {
+    it(`Allows any address to register a candidate`, async () => {
       let data = await ElectionContract.deployed();
       let numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
@@ -30,5 +30,20 @@ contract('Flight Surety Tests', async (accounts) => {
       let remainingRegistrationPeriod = await data._remainingRegistrationPeriod.call();
       console.log(remainingRegistrationPeriod.toNumber());
 
+
     });
+
+    it('Allows an address to register voter', async() => {
+      let data = await ElectionContract.deployed();
+      await data._registerVoter("Jesse",26);
+      let solTime = await data._returnTimenow.call();
+      const now = new Date(solTime);
+      console.log(now.toNumber());
+      //console.log(now.getTime());
+
+
+
+
+    });
+
   });
