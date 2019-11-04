@@ -6,8 +6,6 @@ import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract ElectionContract is Ownable {
 
-  contract ElectionContract is Ownable {
-
     using SafeMath for uint256;
 
     struct Candidate {
@@ -73,6 +71,11 @@ contract ElectionContract is Ownable {
       _;
     }
 
+    modifier unvalidatedCandidate(address _address) {
+        require(isCandidateValid[_address] != true);
+        _;
+    }
+
     modifier validVoter(address _address) {
         require(isVoterValid[_address] == true);
         _;
@@ -80,9 +83,15 @@ contract ElectionContract is Ownable {
 
 
 
+    // Contract Owner
+
+    function _isOwner(address _address) public view returns(bool) {
+      return _address == owner();
+    }
+
     // validate candidates
 
-    function validateCandidate(address _address) public returns (bool) {
+    function validateCandidate(address _address) onlyOwner unvalidatedCandidate (_address )public returns (bool)  {
         return isCandidateValid[_address] = true;
     }
 
@@ -93,7 +102,7 @@ contract ElectionContract is Ownable {
 
    // Open Registration Functions
 
-    function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner {
+    function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner validCandidate(_address) {
         candidates.push(Candidate(_address, _name, _party));
         numberOfCandidates++;
     }
