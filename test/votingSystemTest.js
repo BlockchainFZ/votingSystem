@@ -20,30 +20,26 @@ contract('Flight Surety Tests', async (accounts) => {
       let numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
 
+      await data.validateCandidate(owner);
       await data._registerCandidate("Boris Johnson", "Tory");
       numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
     });
 
-    it('Returns remainingRegistrationPeriod',async () => {
+  /*  it('Returns remainingRegistrationPeriod',async () => {
       let data = await ElectionContract.deployed();
       let remainingRegistrationPeriod = await data._remainingRegistrationPeriod.call();
       console.log(remainingRegistrationPeriod.toNumber());
 
 
     });
+*/
 
     it('Allows an address to register voter', async() => {
       let data = await ElectionContract.deployed();
+      await data.validateVoter(owner);
       await data._registerVoter("Jesse",26);
-      let solTime = await data._returnTimenow.call();
-      const now = new Date(solTime);
-      console.log(now.toNumber());
-      //console.log(now.getTime());
 
-
-
-
-    });
+      });
 
   });
