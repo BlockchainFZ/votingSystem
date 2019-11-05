@@ -40,8 +40,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
     it('Allows an address to register voter', async() => {
       let data = await ElectionContract.deployed();
-    //  await data.validateVoter(owner);
-    //  await data._registerVoter("Jesse",26);
+      await data._registerVoter("Jesse",26);
 
     });
 
