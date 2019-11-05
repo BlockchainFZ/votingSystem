@@ -30,17 +30,31 @@ contract('Flight Surety Tests', async (accounts) => {
       try {
           await data._registerCandidate(account2,"Boris Johnson", "Tory", {from:owner});
       }   catch (err){
-        console.log(err);
+          console.log(err);
       }
 
-      numberOfCandidates = await data.numberOfCandidates.call();
-      assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
+          numberOfCandidates = await data.numberOfCandidates.call();
+          assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
     });
 
 
     it('Allows an address to register voter', async() => {
       let data = await ElectionContract.deployed();
-      await data._registerVoter("Jesse",26);
+      let votingOpen = await data.getVotingAccess.call();
+      assert.equal(votingOpen, false, "Voter Registration open");
+
+      try {
+         await data._registerVoter("John Derry", 12);
+      }  catch(err) {
+         console.log("Cannot Register Voter");
+      }
+
+      votingOpen = await data.setVotingAccess(true,{from:owner});
+      votingOpen = await data.getVotingAccess.call();
+      assert.equal(votingOpen, true, "Voter Registration closed");
+
+      await data._registerVoter("John Derry", 12, {from:owner});
+      
 
     });
 
