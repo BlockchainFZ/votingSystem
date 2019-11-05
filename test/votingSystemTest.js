@@ -21,19 +21,6 @@ contract('Flight Surety Tests', async (accounts) => {
       let numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
 
-
-      try {
-        await data.validateCandidate(account2,{from:account2});
-      } catch(err) {
-        console.log("Only Contract Owner can validate candidates");
-      }
-
-      try {
-        await data.validateCandidate(account2,{from:owner});
-      } catch(err) {
-        console.log(err);
-      }
-
       try {
           await data._registerCandidate(account2,"Boris Johnson", "Tory", {from:account2});
         } catch(err) {
@@ -42,14 +29,14 @@ contract('Flight Surety Tests', async (accounts) => {
 
       try {
           await data._registerCandidate(account2,"Boris Johnson", "Tory", {from:owner});
-      } catch (err){
+      }   catch (err){
         console.log(err);
       }
 
       numberOfCandidates = await data.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
     });
-    
+
 
     it('Allows an address to register voter', async() => {
       let data = await ElectionContract.deployed();
