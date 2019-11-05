@@ -17,6 +17,7 @@ contract ElectionContract is Ownable {
     struct Voter {
         string name;
         uint age;
+
     }
 
     struct Election {
@@ -83,6 +84,8 @@ contract ElectionContract is Ownable {
 
 
 
+
+
     // Contract Owner
 
     function _isOwner(address _address) public view returns(bool) {
@@ -108,19 +111,31 @@ contract ElectionContract is Ownable {
     // voting Functions
 
 
+
+
     // Set Election Period Functions
 
-    function setRegistrationPeriod() public onlyOwner returns (bool) {
-            return election.openRegistrationPeriod = false;
+    function setRegistrationAccess(bool _access) public onlyOwner returns (bool) {
+            return election.openRegistrationPeriod = _access;
     }
 
-    function setVotingPeriod() public onlyOwner returns (bool) {
-            return election.openVotingPeriod = false;
+    function setVotingAccess(bool _access) public onlyOwner returns (bool) {
+            return election.openVotingPeriod = _access;
     }
 
-    function setElectionPeriod() public onlyOwner returns (bool) {
-            return election.openElectionPeriod = false;
+
+    // Get Election Period Functions
+
+    function getRegistrationAccess() public view onlyOwner returns (bool) {
+            return election.openRegistrationPeriod;
     }
+
+    function getVotingAccess() public view onlyOwner returns (bool) {
+            return election.openVotingPeriod;
+
+    }
+
+
 
 
 }
