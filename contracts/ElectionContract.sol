@@ -108,17 +108,17 @@ contract ElectionContract is Ownable {
     // voting Functions
 
 
-    // Close Registration Functions
+    // Set Election Period Functions
 
-    function _closeRegistrationPeriod() public returns (bool) {
+    function setRegistrationPeriod() public onlyOwner returns (bool) {
             return election.openRegistrationPeriod = false;
     }
 
-    function _closeVotingPeriod() public returns (bool) {
+    function setVotingPeriod() public onlyOwner returns (bool) {
             return election.openVotingPeriod = false;
     }
 
-    function _closeElection() public returns (bool) {
+    function setElectionPeriod() public onlyOwner returns (bool) {
             return election.openElectionPeriod = false;
     }
 
