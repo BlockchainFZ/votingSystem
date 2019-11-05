@@ -24,9 +24,9 @@ contract ElectionContract is Ownable {
         uint256 registrationPeriod;
         uint256 votingPeriod;
         uint256 endTime;
-        bool closeRegistrationPeriod;
-        bool closeVotingPeriod;
-        bool closeElectionPeriod;
+        bool openRegistrationPeriod;
+        bool openVotingPeriod;
+        bool openElectionPeriod;
     }
 
     Election public election;
@@ -45,24 +45,24 @@ contract ElectionContract is Ownable {
 
 
     constructor() public {
-     election = Election(now, 1 days, 2 days, 2 days, false, false, false);
+     election = Election(now, 1 days, 2 days, 2 days, true, false, false);
 
     }
 
     // modifiers
 
     modifier registrationPeriodIsOpen()  {
-        require(election.closeRegistrationPeriod == false);
+        require(election.openRegistrationPeriod == true);
     _;
     }
 
     modifier votingPeriodIsOpen() {
-      require(election.closeVotingPeriod == false);
+      require(election.openVotingPeriod == true);
       _;
     }
 
     modifier closeElectionPeriod() {
-      require(election.closeElectionPeriod == false);
+      require(election.openElectionPeriod == true);
       _;
     }
 
@@ -90,9 +90,7 @@ contract ElectionContract is Ownable {
     }
 
 
-
-
-   //  Registration Functions
+    //  Registration Functions
 
     function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner {
         candidates.push(Candidate(_address, _name, _party));
@@ -112,17 +110,17 @@ contract ElectionContract is Ownable {
 
     // Close Registration Functions
 
- /*   function _closeRegistrationPeriod() public returns (bool) {
-            return election.closeRegistrationPeriod = true;
+    function _closeRegistrationPeriod() public returns (bool) {
+            return election.openRegistrationPeriod = false;
     }
 
     function _closeVotingPeriod() public returns (bool) {
-            return election.closeVotingPeriod = true;
+            return election.openVotingPeriod = false;
     }
 
     function _closeElection() public returns (bool) {
-            return election.closeElectionPeriod = true;
+            return election.openElectionPeriod = false;
     }
-    */
+
 
 }
