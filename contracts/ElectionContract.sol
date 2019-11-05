@@ -89,21 +89,10 @@ contract ElectionContract is Ownable {
       return _address == owner();
     }
 
-    // validate candidates
-
-  /*  function validateCandidate(address _address) onlyOwner unvalidatedCandidate (_address )public returns (bool)  {
-        return isCandidateValid[_address] = true;
-    }
 
 
-     function validateVoter(address _address) public returns (bool) {
-        return isVoterValid[_address] = true;
-    }
 
-  */
-
-
-   // Open Registration Functions
+   //  Registration Functions
 
     function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner {
         candidates.push(Candidate(_address, _name, _party));
