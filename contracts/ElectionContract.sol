@@ -15,6 +15,7 @@ contract ElectionContract is Ownable {
     }
 
     struct Voter {
+        address _address;
         string name;
         uint age;
 
@@ -31,17 +32,15 @@ contract ElectionContract is Ownable {
     }
 
     Election public election;
-    //Voter public voter;
-    //Candidate public candidate;
+
     mapping(address => bool) isCandidateValid;
     mapping(address => bool) isVoterValid;
+
+    mapping(address => Voter) voters;
 
 
     Candidate[] public candidates;
     uint public numberOfCandidates;
-
-
-    Voter[] public voters;
     uint public numberOfVoters;
 
 
@@ -53,32 +52,32 @@ contract ElectionContract is Ownable {
     // modifiers
 
     modifier registrationPeriodIsOpen()  {
-        require(election.openRegistrationPeriod == true);
+        require(election.openRegistrationPeriod == true, "Registration period is closed");
     _;
     }
 
     modifier votingPeriodIsOpen() {
-      require(election.openVotingPeriod == true);
+      require(election.openVotingPeriod == true, "Voting period is closed");
       _;
     }
 
     modifier closeElectionPeriod() {
-      require(election.openElectionPeriod == true);
+      require(election.openElectionPeriod == true, "Election period is closed");
       _;
     }
 
     modifier validCandidate(address _address) {
-      require(isCandidateValid[_address] == true);
+      require(isCandidateValid[_address] == true, "Candidate is invalid");
       _;
     }
 
     modifier unvalidatedCandidate(address _address) {
-        require(isCandidateValid[_address] != true);
+        require(isCandidateValid[_address] != true, "Candidate is valid");
         _;
     }
 
     modifier validVoter(address _address) {
-        require(isVoterValid[_address] == true);
+        require(voters[_address]._address == address(0), "Voter can register only once");
         _;
     }
 
@@ -101,15 +100,20 @@ contract ElectionContract is Ownable {
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen  {
-        voters.push(Voter(_name,_age));
+    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoter(msg.sender) {
+        require(_age >= 18, "Voters must be over 18 to register");
+        Voter memory newVoter = Voter({
+            _address: msg.sender,
+            name: _name,
+            age:_age
+        });
+        voters[msg.sender] = newVoter;
         isVoterValid[msg.sender] = true;
         numberOfVoters++;
     }
 
 
     // voting Functions
-
 
 
 
@@ -134,8 +138,5 @@ contract ElectionContract is Ownable {
             return election.openVotingPeriod;
 
     }
-
-
-
 
 }
