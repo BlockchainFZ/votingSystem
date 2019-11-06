@@ -103,7 +103,7 @@ contract ElectionContract is Ownable {
 
     function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen  {
         voters.push(Voter(_name,_age));
-        isVoterValid[msg.sender];
+        isVoterValid[msg.sender] = true;
         numberOfVoters++;
     }
 
