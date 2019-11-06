@@ -76,7 +76,7 @@ contract ElectionContract is Ownable {
         _;
     }
 
-    modifier validVoter(address _address) {
+    modifier validVoterRegistration(address _address) {
         require(voters[_address]._address == address(0), "Voter can register only once");
         _;
     }
@@ -100,7 +100,7 @@ contract ElectionContract is Ownable {
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoter(msg.sender) {
+    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoterRegistration(msg.sender) {
         require(_age >= 18, "Voters must be over 18 to register");
         Voter memory newVoter = Voter({
             _address: msg.sender,
@@ -114,8 +114,15 @@ contract ElectionContract is Ownable {
 
 
     // voting Functions
-
-
+    // Ideally we want to return a Struct here
+    
+    function getVoter(address _address) public view returns(address, string memory, uint){
+        Voter memory voter = voters[_address];
+        address _voterAddress = voter._address;
+        string memory name = voter.name;
+        uint age = voter.age;
+        return(_voterAddress, name, age);
+    }
 
     // Set Election Period Functions
 
