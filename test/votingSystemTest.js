@@ -44,7 +44,7 @@ contract('Flight Surety Tests', async (accounts) => {
       assert.equal(votingOpen, false, "Voter Registration open");
 
       try {
-         await data._registerVoter("John Derry", 12);
+         await data._registerVoter("John Derry", 18);
       }  catch(err) {
          console.log("Cannot Register Voter");
       }
@@ -53,8 +53,8 @@ contract('Flight Surety Tests', async (accounts) => {
       votingOpen = await data.getVotingAccess.call();
       assert.equal(votingOpen, true, "Voter Registration closed");
 
-      await data._registerVoter("John Derry", 12, {from:owner});
-      
+      await data._registerVoter("John Derry", 18, {from:owner});
+
 
     });
 
