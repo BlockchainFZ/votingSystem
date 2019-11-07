@@ -1,3 +1,4 @@
+
 var ElectionContract = artifacts.require("ElectionContract");
 
 contract('Flight Surety Tests', async (accounts) => {
@@ -13,6 +14,7 @@ contract('Flight Surety Tests', async (accounts) => {
       assert.equal(status, true, "Not the contract owner");
       status = await data._isOwner(account2);
       assert.equal(status, false, "Contract owner required");
+
 
     });
 
@@ -41,7 +43,9 @@ contract('Flight Surety Tests', async (accounts) => {
     it('Allows an address to register voter', async() => {
       let data = await ElectionContract.deployed();
       let votingOpen = await data.getVotingAccess.call();
+      let voteFunction = data.getVotingAccess();
       assert.equal(votingOpen, false, "Voter Registration open");
+
 
       try {
          await data._registerVoter("John Derry", 18);

@@ -1,0 +1,30 @@
+{
+  "name": "votingsystem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "^2.4.0",
+    "truffle-hdwallet-provider": "^1.0.17",
+    "zos-lib": "^2.4.2"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.2"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kkeaveney/votingSystem.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kkeaveney/votingSystem/issues"
+  },
+  "homepage": "https://github.com/kkeaveney/votingSystem#readme"
+}
