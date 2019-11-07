@@ -1,4 +1,5 @@
 pragma solidity ^0.5.8;
+pragma experimental ABIEncoderV2;
 
 import "../node_modules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../node_modules/openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -37,9 +38,9 @@ contract ElectionContract is Ownable {
     mapping(address => bool) isVoterValid;
 
     mapping(address => Voter) voters;
+    mapping(address => Candidate) candidates;
 
 
-    Candidate[] public candidates;
     uint public numberOfCandidates;
     uint public numberOfVoters;
 
@@ -48,6 +49,11 @@ contract ElectionContract is Ownable {
      election = Election(now, 1 days, 2 days, 2 days, true, false, false);
 
     }
+
+    // events
+
+    event LogNewCandidate(address sender);
+    event LogNewVoter(address sender);
 
     // modifiers
 
@@ -76,7 +82,7 @@ contract ElectionContract is Ownable {
         _;
     }
 
-    modifier validVoterRegistration(address _address) {
+    modifier validVoter(address _address) {
         require(voters[_address]._address == address(0), "Voter can register only once");
         _;
     }
@@ -95,18 +101,27 @@ contract ElectionContract is Ownable {
     //  Registration Functions
 
     function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner {
-        candidates.push(Candidate(_address, _name, _party));
+
+        Candidate memory candidate = Candidate({
+           _address:_address,
+           name: _name,
+           party:_party
+        });
+        emit LogNewCandidate(_address);
+        candidates[_address] = candidate;
         isCandidateValid[_address] = true;
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoterRegistration(msg.sender) {
+    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoter(msg.sender) {
+
         require(_age >= 18, "Voters must be over 18 to register");
         Voter memory newVoter = Voter({
             _address: msg.sender,
             name: _name,
             age:_age
         });
+        emit LogNewVoter(msg.sender);
         voters[msg.sender] = newVoter;
         isVoterValid[msg.sender] = true;
         numberOfVoters++;
@@ -114,14 +129,9 @@ contract ElectionContract is Ownable {
 
 
     // voting Functions
-    // Ideally we want to return a Struct here
-    
-    function getVoter(address _address) public view returns(address, string memory, uint){
-        Voter memory voter = voters[_address];
-        address _voterAddress = voter._address;
-        string memory name = voter.name;
-        uint age = voter.age;
-        return(_voterAddress, name, age);
+
+    function getVoter(address _address) public view returns(Voter memory){
+        return(voters[_address]);
     }
 
     // Set Election Period Functions
