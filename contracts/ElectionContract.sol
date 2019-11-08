@@ -127,6 +127,10 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
+    function assertTest(uint age) public  {
+      require(age == 0);
+    }
+
 
     // voting Functions
 
@@ -154,6 +158,10 @@ contract ElectionContract is Ownable {
     function getVotingAccess() public view onlyOwner returns (bool) {
             return election.openVotingPeriod;
 
+    }
+
+    function kill() onlyOwner external {
+      selfdestruct(msg.sender);
     }
 
 }
