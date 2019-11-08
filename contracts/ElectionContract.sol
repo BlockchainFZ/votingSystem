@@ -93,9 +93,10 @@ contract ElectionContract is Ownable {
 
     // Contract Owner
 
-    function _isOwner(address _address) public view returns(bool) {
+    function _isOwner(address _address) public view returns(bool)  {
       return _address == owner();
     }
+
 
 
     //  Registration Functions
@@ -127,9 +128,6 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
-    function assertTest(uint age) public  {
-      require(age == 0);
-    }
 
 
     // voting Functions
@@ -163,5 +161,17 @@ contract ElectionContract is Ownable {
     function kill() onlyOwner external {
       selfdestruct(msg.sender);
     }
+
+    // Assertion Test Functions
+
+    function ownerT(address _address) public view {
+
+        require(_address == msg.sender, "help");
+    }
+
+    function assertTest(uint age) public  {
+      require(age == 0);
+    }
+
 
 }
