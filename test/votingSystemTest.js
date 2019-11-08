@@ -66,6 +66,7 @@ contract('Flight Surety Tests', async (accounts) => {
       let votingOpen = await contract.getVotingAccess.call();
       let voteFunction = contract.getVotingAccess();
       assert.equal(votingOpen, false, "Voter Registration open");
+      await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
 
 
 
@@ -79,6 +80,9 @@ contract('Flight Surety Tests', async (accounts) => {
 
       votingOpen = await contract.setVotingAccess(true,{from:owner});
       await truffleAssert.reverts(contract._registerVoter("John Derry", 1), "Voters must be over 18 to register");
+
+
+
       votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, true, "Voter Registration closed");
 
