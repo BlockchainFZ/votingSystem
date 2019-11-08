@@ -12,7 +12,9 @@
     "zos-lib": "^2.4.2"
   },
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "truffle-assertions": "^0.9.2"
   },
   "scripts": {
     "test": "mocha"
