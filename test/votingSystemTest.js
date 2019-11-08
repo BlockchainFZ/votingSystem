@@ -12,25 +12,20 @@ contract('Flight Surety Tests', async (accounts) => {
 
     beforeEach(async () => {
       contract = await ElectionContract.new({ from: owner});
-
     });
 
     afterEach(async () => {
       await contract.kill({ from: owner});
     });
 
-    it("Confirms value is not equal to Zero", async () => {
 
-      await truffleAssert.reverts(contract.assertTest(10));
-      //await truffleAssert.fails(contract.assertTest(10));
-    });
+     it(`Confirms contract owner`, async () => {
 
-    it(`Confirms contract owner`, async () => {
-
-      let status = await contract._isOwner(owner);
-      assert.equal(status, true, "Not the contract owner");
-      status = await contract._isOwner(account2);
-      assert.equal(status, false, "Contract owner required");
+    //  let status = await contract._isOwner(owner);
+    //  assert.equal(status, true, "Not the contract owner");
+      //status = await contract._isOwner(account2);
+      //assert.equal(status, false, "Contract owner required");
+      await truffleAssert.reverts(contract.ownerT(account2), "help");
 
 
     });
