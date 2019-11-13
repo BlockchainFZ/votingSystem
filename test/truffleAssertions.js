@@ -41,13 +41,19 @@ contract('Flight Surety Tests', async (accounts) => {
       await truffleAssert.reverts(contract._registerCandidate(account2,"Boris Johnson", "Tory"), "Registration period is closed");
     });
 
-    it('Demonstrates the Voting period is open`', async() => {
+    it('Demonstrates the Voting period is closed`', async() => {
 
         await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
     });
 
     it(`Demonstrates an invalid Candidate`, async() => {
         await truffleAssert.reverts(contract.getCandidate(owner), "Candidate is invalid");
+    });
+
+    it(`Demonstrates a Candidate is invalid`, async() =>{
+        await contract.setElectionAccess(true);
+        await contract._registerCandidate(owner,"Boris Johnson", "Tory");
+        await truffleAssert.reverts(contract.getCandidate(account2), "Candidate is invalid");
     });
 
 
