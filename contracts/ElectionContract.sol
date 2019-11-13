@@ -99,25 +99,7 @@ contract ElectionContract is Ownable {
 
     // Contract Owner
 
-    /**
-     * @dev Returns the address of the current owner.
 
-    function owner() public view returns (address) {
-        return _owner;
-    }
-
-    /**
-     * @dev Returns true if the caller is the current owner.
-
-    function isOwner() public view returns (bool) {
-        return _msgSender() == _owner;
-    }
-
-
-    function _msgSender() internal view returns (address payable) {
-        return msg.sender;
-    }
-    */
 
     //  Registration Functions
 
@@ -155,7 +137,11 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
+    // Candidate Functions
 
+    function getCandidate(address _address) public validCandidate(_address) returns(bool) {
+        return(isCandidateValid[_address]);
+    }
 
     // voting Functions
 
