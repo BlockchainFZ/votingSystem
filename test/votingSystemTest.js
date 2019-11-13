@@ -21,7 +21,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
      it(`Confirms contract owner`, async () => {
 
-      await truffleAssert.reverts(contract.contractOwner(account2,{from:account2}), "Ownable: caller is not the owner");
+      await truffleAssert.reverts(contract.contractOwner(owner,{from:account2}), "Ownable: caller is not the owner");
     });
 
 
@@ -29,8 +29,6 @@ contract('Flight Surety Tests', async (accounts) => {
 
     await truffleAssert.reverts(contract.setRegistrationAccess(true,{from:account2}),"Ownable: caller is not the owner");
     });
-
-
 
 
     it(`Allows any address to register a candidate`, async () => {
