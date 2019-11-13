@@ -62,10 +62,6 @@ contract ElectionContract is Ownable {
 
     // modifiers
 
-    // Ownable
-
-
-
     modifier registrationPeriodIsOpen()  {
         require(election.openRegistrationPeriod == true, "Registration period is closed");
     _;
@@ -97,7 +93,7 @@ contract ElectionContract is Ownable {
     }
 
 
-    // Contract Owner
+
 
 
 
@@ -187,8 +183,8 @@ contract ElectionContract is Ownable {
 
     // Assertion Test Functions
 
-    function contractOwner(address _address) public view onlyOwner{
-
+    function contractOwner(address _address) public view onlyOwner returns(bool){
+        return isOwner();     
     }
 
 
