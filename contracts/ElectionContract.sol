@@ -64,15 +64,7 @@ contract ElectionContract is Ownable {
 
     // Ownable
 
-    /**
-     * @dev Throws if called by any account other than the owner.
 
-    modifier onlyOwner() {
-        require(isOwner(), "Ownable: caller is not the owner");
-        _;
-    }
-
-    */
 
     modifier registrationPeriodIsOpen()  {
         require(election.openRegistrationPeriod == true, "Registration period is closed");
@@ -84,7 +76,7 @@ contract ElectionContract is Ownable {
       _;
     }
 
-    modifier closeElectionPeriod() {
+    modifier electionPeriodIsOpen() {
       require(election.openElectionPeriod == true, "Election period is closed");
       _;
     }
@@ -129,7 +121,10 @@ contract ElectionContract is Ownable {
 
     //  Registration Functions
 
-    function _registerCandidate(address _address, string memory _name, string memory _party) public registrationPeriodIsOpen onlyOwner {
+    function _registerCandidate(address _address, string memory _name, string memory _party) public
+    registrationPeriodIsOpen
+    electionPeriodIsOpen
+    onlyOwner {
 
         Candidate memory candidate = Candidate({
            _address:_address,
@@ -142,7 +137,11 @@ contract ElectionContract is Ownable {
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public votingPeriodIsOpen validVoter(msg.sender) {
+    function _registerVoter(string memory _name, uint _age) public
+    votingPeriodIsOpen
+    electionPeriodIsOpen
+    onlyOwner
+    validVoter(msg.sender) {
 
         require(_age >= 18, "Voters must be over 18 to register");
         Voter memory newVoter = Voter({
@@ -166,6 +165,11 @@ contract ElectionContract is Ownable {
 
     // Set Election Period Functions
 
+
+    function setElectionAccess(bool _access) public onlyOwner returns (bool) {
+              return election.openElectionPeriod = _access;
+    }
+
     function setRegistrationAccess(bool _access) public onlyOwner returns (bool) {
             return election.openRegistrationPeriod = _access;
     }
@@ -183,8 +187,13 @@ contract ElectionContract is Ownable {
 
     function getVotingAccess() public view onlyOwner returns (bool) {
             return election.openVotingPeriod;
-
     }
+
+    function getElectionAccess() public view onlyOwner returns (bool) {
+            return election.openElectionPeriod;
+    }
+
+
 
     function kill() onlyOwner external {
       selfdestruct(msg.sender);
