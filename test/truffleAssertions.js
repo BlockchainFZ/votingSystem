@@ -22,6 +22,7 @@ contract('Flight Surety Tests', async (accounts) => {
      it(`Demonstrates the caller is the contract owner`, async () => {
       /* Attempt to use onlyOwner from non-owner contract*/
        await truffleAssert.reverts(contract.contractOwner(owner,{from:account2}), "Ownable: caller is not the owner");
+
     });
 
 
