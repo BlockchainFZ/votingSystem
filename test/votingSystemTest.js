@@ -11,28 +11,35 @@ contract('Flight Surety Tests', async (accounts) => {
     let account2 = accounts[1];
 
     beforeEach(async () => {
-      contract = await ElectionContract.new({ from: owner});
+      contract = await ElectionContract.new({ from:owner});
     });
 
     afterEach(async () => {
-      await contract.kill({ from: owner});
+      await contract.kill({ from:owner});
     });
 
 
      it(`Confirms contract owner`, async () => {
 
-    //  let status = await contract._isOwner(owner);
-    //  assert.equal(status, true, "Not the contract owner");
-      //status = await contract._isOwner(account2);
-      //assert.equal(status, false, "Contract owner required");
-      await truffleAssert.reverts(contract.ownerT(account2), "help");
-
-
+      await truffleAssert.reverts(contract.contractOwner(account2,{from:account2}), "Ownable: caller is not the owner");
     });
+
+
+    it('Allows owner to set registration access', async() => {
+
+    await truffleAssert.reverts(contract.setRegistrationAccess(true,{from:account2}),"Ownable: caller is not the owner");
+    });
+
+
+
 
     it(`Allows any address to register a candidate`, async () => {
 
-      let numberOfCandidates = await contract.numberOfCandidates.call();
+    await contract.setRegistrationAccess(false);
+    await truffleAssert.reverts(contract._registerCandidate(account2,"Boris Johnson", "Tory"), "Registration period is closed");
+    //await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
+
+  /*    let numberOfCandidates = await contract.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
 
       try {
@@ -51,24 +58,21 @@ contract('Flight Surety Tests', async (accounts) => {
       }
 
           numberOfCandidates = await contract.numberOfCandidates.call();
-
-         assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
+          assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
     });
 
+    */
+  });
 
     it('Allows an address to register voter', async() => {
 
-      let votingOpen = await contract.getVotingAccess.call();
-      let voteFunction = contract.getVotingAccess();
+        await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
+/*      let votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, false, "Voter Registration open");
       await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
 
-
-
-
-
       try {
-         await contract._registerVoter("John Derry", 18);
+         await ccontract._registerVoter("John Derry", 18);
       }  catch(err) {
          console.log("Cannot Register Voter");
       }
@@ -76,15 +80,14 @@ contract('Flight Surety Tests', async (accounts) => {
       votingOpen = await contract.setVotingAccess(true,{from:owner});
       await truffleAssert.reverts(contract._registerVoter("John Derry", 1), "Voters must be over 18 to register");
 
-
-
       votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, true, "Voter Registration closed");
 
       await contract._registerVoter("John Derry", 18, {from:owner});
-
-
+*/
     });
+
+
 
 
 
