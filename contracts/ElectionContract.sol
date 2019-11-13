@@ -9,6 +9,7 @@ contract ElectionContract is Ownable {
 
     using SafeMath for uint256;
 
+
     struct Candidate {
         address _address;
         string name;
@@ -46,8 +47,7 @@ contract ElectionContract is Ownable {
 
 
     constructor() public {
-     election = Election(now, 1 days, 2 days, 2 days, true, false, false);
-
+      election = Election(now, 1 days, 2 days, 2 days, true, false, false);
     }
 
     // events
@@ -55,7 +55,24 @@ contract ElectionContract is Ownable {
     event LogNewCandidate(address sender);
     event LogNewVoter(address sender);
 
+
+
+
+
+
     // modifiers
+
+    // Ownable
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+
+    modifier onlyOwner() {
+        require(isOwner(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    */
 
     modifier registrationPeriodIsOpen()  {
         require(election.openRegistrationPeriod == true, "Registration period is closed");
@@ -88,16 +105,27 @@ contract ElectionContract is Ownable {
     }
 
 
-
-
-
     // Contract Owner
 
-    function _isOwner(address _address) public view returns(bool)  {
-      return _address == owner();
+    /**
+     * @dev Returns the address of the current owner.
+
+    function owner() public view returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @dev Returns true if the caller is the current owner.
+
+    function isOwner() public view returns (bool) {
+        return _msgSender() == _owner;
     }
 
 
+    function _msgSender() internal view returns (address payable) {
+        return msg.sender;
+    }
+    */
 
     //  Registration Functions
 
@@ -164,14 +192,11 @@ contract ElectionContract is Ownable {
 
     // Assertion Test Functions
 
-    function ownerT(address _address) public view {
+    function contractOwner(address _address) public view onlyOwner{
 
-        require(_address == msg.sender, "help");
     }
 
-    function assertTest(uint age) public  {
-      require(age == 0);
-    }
+
 
 
 }
