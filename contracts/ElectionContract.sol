@@ -23,6 +23,15 @@ contract ElectionContract is Ownable {
 
     }
 
+    struct Party {
+      string Conservative;
+      string Labour;
+      string LibDem;
+      string Green;
+      string Brexit;
+
+    }
+
     struct Election {
         uint256 electionTimeStamp;
         uint256 registrationPeriod;
@@ -35,8 +44,11 @@ contract ElectionContract is Ownable {
 
     Election public election;
 
+    string[5] public parties = ["Conservative", "Labour", "LibDem", "Green", "Brexit"];
+
     mapping(address => bool) isCandidateValid;
     mapping(address => bool) isVoterValid;
+    mapping(string => uint256) partyCount;
 
     mapping(address => Voter) voters;
     mapping(address => Candidate) candidates;
@@ -101,10 +113,10 @@ contract ElectionContract is Ownable {
     //  Registration Functions
 
     function _registerCandidate(address _address, string memory _name, string memory _party) public
-    registrationPeriodIsOpen
-    electionPeriodIsOpen
-    unregisteredCandidate(_address)
-    onlyOwner {
+      registrationPeriodIsOpen
+      electionPeriodIsOpen
+      unregisteredCandidate(_address)
+      onlyOwner {
 
         Candidate memory candidate = Candidate({
            _address:_address,
@@ -118,10 +130,10 @@ contract ElectionContract is Ownable {
     }
 
     function _registerVoter(address _address, string memory _name, uint _age) public
-    votingPeriodIsOpen
-    electionPeriodIsOpen
-    onlyOwner
-    unregisteredVoter(msg.sender) {
+      votingPeriodIsOpen
+      electionPeriodIsOpen
+      onlyOwner
+      unregisteredVoter(msg.sender) {
 
         require(_age >= 18, "Voters must be over 18 to register");
         Voter memory newVoter = Voter({
@@ -135,6 +147,14 @@ contract ElectionContract is Ownable {
         numberOfVoters++;
     }
 
+    // Vote Functions
+
+    function vote(string memory _party) public
+      votingPeriodIsOpen
+      registeredVoter(msg.sender) {
+        partyCount[_party]++;
+      }
+
     // Candidate Functions
 
     function getCandidate(address _address) public view registeredCandidate(_address) returns(bool) {
@@ -146,6 +166,12 @@ contract ElectionContract is Ownable {
     function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
         return(voters[_address]);
     }
+
+    function getPartyCount(string memory _party) public view
+      onlyOwner
+      returns (uint256) {
+          return(partyCount[_party]);
+      }
 
     // Set Election Period Functions
 
