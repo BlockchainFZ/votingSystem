@@ -45,7 +45,7 @@ contract('Voting System Tests', async (accounts) => {
 
     it('Demonstrates the Voting period is closed`', async() => {
         /* Attempt to register voter without opening voting period*/
-        await truffleAssert.reverts(contract._registerVoter("John Derry", 19), "Voting period is closed");
+        await truffleAssert.reverts(contract._registerVoter(owner, "John Derry", 19), "Voting period is closed");
     });
 
     it(`Demonstrates an invalid Candidate`, async() => {

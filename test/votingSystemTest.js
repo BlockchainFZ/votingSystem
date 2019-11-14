@@ -83,7 +83,7 @@ contract('Voting System Tests', async (accounts) => {
       // Voting period is open */
 
       try {
-         await contract._registerVoter("John Derry", 18);
+         await contract._registerVoter(owner, "John Derry", 18);
       }  catch(err) {
          // Voting period is closed //
       }
@@ -94,7 +94,7 @@ contract('Voting System Tests', async (accounts) => {
       votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, true, "Voter Registration closed");
 
-      await contract._registerVoter("John Derry", 18, {from:owner});
+      await contract._registerVoter(owner, "John Derry", 18, {from:owner});
 
     });
 
