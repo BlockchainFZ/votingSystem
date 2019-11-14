@@ -23,16 +23,7 @@ contract ElectionContract is Ownable {
 
     }
 
-    struct Party {
-      string Conservative;
-      string Labour;
-      string LibDem;
-      string Green;
-      string Brexit;
-
-    }
-
-    struct Election {
+  struct Election {
         uint256 electionTimeStamp;
         uint256 registrationPeriod;
         uint256 votingPeriod;
@@ -44,7 +35,7 @@ contract ElectionContract is Ownable {
 
     Election public election;
 
-    string[5] public parties = ["Conservative", "Labour", "LibDem", "Green", "Brexit"];
+    enum parties  {Conservative, Labour, LibDem, Green, Brexit }
 
     mapping(address => bool) isCandidateValid;
     mapping(address => bool) isVoterValid;
@@ -109,6 +100,11 @@ contract ElectionContract is Ownable {
         _;
     }
 
+    modifier validVote(string memory _party) {
+      //require(_party == parties[0], "Vote must be from valid party");
+      _;
+    }
+
 
     //  Registration Functions
 
@@ -151,6 +147,7 @@ contract ElectionContract is Ownable {
 
     function vote(string memory _party) public
       votingPeriodIsOpen
+      //validVote(_party)
       registeredVoter(msg.sender) {
         partyCount[_party]++;
       }
