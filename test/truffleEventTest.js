@@ -4,7 +4,7 @@ const assert = require("chai").assert;
 const truffleAssert = require('truffle-assertions');
 
 
-contract('Voting System Event Tests', async (accounts) => {
+contract('Truffle Event Tests', async (accounts) => {
 
     let contract;
     let owner = accounts[0];
@@ -25,8 +25,8 @@ contract('Voting System Event Tests', async (accounts) => {
 
        truffleAssert.eventEmitted(tx, 'LogNewCandidate', (event) => {
          return (event._address == owner);
-
-      });
+       });
+       truffleAssert.eventNotEmitted(tx,'LogNewVoter');
 
     });
 
