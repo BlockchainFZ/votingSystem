@@ -4,7 +4,7 @@ const assert = require("chai").assert;
 const truffleAssert = require('truffle-assertions');
 
 
-contract('Flight Surety Tests', async (accounts) => {
+contract('Voting System Tests', async (accounts) => {
 
     let contract;
     let owner = accounts[0];
@@ -21,7 +21,7 @@ contract('Flight Surety Tests', async (accounts) => {
 
      it(`Demonstrates the caller is the contract owner`, async () => {
       /* Attempt to use onlyOwner from non-owner contract*/
-       await truffleAssert.reverts(contract.contractOwner(owner,{from:account2}), "Ownable: caller is not the owner");
+       await truffleAssert.reverts(contract.contractOwner({from:account2}), "Ownable: caller is not the owner");
 
     });
 
