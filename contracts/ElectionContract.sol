@@ -52,8 +52,8 @@ contract ElectionContract is Ownable {
 
     // events
 
-    event LogNewCandidate(address sender);
-    event LogNewVoter(address sender);
+    event LogNewCandidate(address _address, string _name, string _party);
+    event LogNewVoter(address _address, string _name, uint _age);
 
 
 
@@ -111,13 +111,13 @@ contract ElectionContract is Ownable {
            name: _name,
            party:_party
         });
-        emit LogNewCandidate(_address);
+        emit LogNewCandidate(_address, _name, _party);
         candidates[_address] = candidate;
         isCandidateValid[_address] = true;
         numberOfCandidates++;
     }
 
-    function _registerVoter(string memory _name, uint _age) public
+    function _registerVoter(address _address, string memory _name, uint _age) public
     votingPeriodIsOpen
     electionPeriodIsOpen
     onlyOwner
@@ -129,7 +129,7 @@ contract ElectionContract is Ownable {
             name: _name,
             age:_age
         });
-        emit LogNewVoter(msg.sender);
+        emit LogNewVoter(_address, _name, _age);
         voters[msg.sender] = newVoter;
         isVoterValid[msg.sender] = true;
         numberOfVoters++;
