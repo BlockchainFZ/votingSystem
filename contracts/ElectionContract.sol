@@ -77,24 +77,25 @@ contract ElectionContract is Ownable {
       _;
     }
 
-    modifier validCandidate(address _address) {
+    modifier registeredCandidate(address _address) {
       require(isCandidateValid[_address] == true, "Candidate is invalid");
       _;
     }
 
-    modifier unvalidatedCandidate(address _address) {
+    modifier unregisteredCandidate(address _address) {
         require(isCandidateValid[_address] != true, "Candidate is valid");
         _;
     }
 
-    modifier validVoter(address _address) {
-        require(voters[_address]._address == address(0), "Voter can register only once");
+    modifier unregisteredVoter(address _address) {
+        require(voters[_address]._address == address(0), "Voter can already registered only once");
         _;
     }
 
-
-
-
+    modifier registeredVoter(address _address) {
+        require(voters[_address]._address != address(0), "Voter is not registered only once");
+        _;
+    }
 
 
     //  Registration Functions
@@ -102,6 +103,7 @@ contract ElectionContract is Ownable {
     function _registerCandidate(address _address, string memory _name, string memory _party) public
     registrationPeriodIsOpen
     electionPeriodIsOpen
+    unregisteredCandidate(_address)
     onlyOwner {
 
         Candidate memory candidate = Candidate({
@@ -119,7 +121,7 @@ contract ElectionContract is Ownable {
     votingPeriodIsOpen
     electionPeriodIsOpen
     onlyOwner
-    validVoter(msg.sender) {
+    unregisteredVoter(msg.sender) {
 
         require(_age >= 18, "Voters must be over 18 to register");
         Voter memory newVoter = Voter({
@@ -135,13 +137,13 @@ contract ElectionContract is Ownable {
 
     // Candidate Functions
 
-    function getCandidate(address _address) public validCandidate(_address) returns(bool) {
+    function getCandidate(address _address) public view registeredCandidate(_address) returns(bool) {
         return(isCandidateValid[_address]);
     }
 
     // voting Functions
 
-    function getVoter(address _address) public view returns(Voter memory){
+    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
         return(voters[_address]);
     }
 
@@ -183,8 +185,8 @@ contract ElectionContract is Ownable {
 
     // Assertion Test Functions
 
-    function contractOwner(address _address) public view onlyOwner returns(bool){
-        return isOwner();     
+    function contractOwner() public view onlyOwner returns(bool){
+        return isOwner();
     }
 
 
