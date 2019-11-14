@@ -12,6 +12,7 @@ contract('Voting System Tests', async (accounts) => {
 
     beforeEach(async () => {
       contract = await ElectionContract.new({ from:owner });
+      await contract.setElectionAccess(true);
     });
 
     afterEach(async () => {
@@ -47,7 +48,6 @@ contract('Voting System Tests', async (accounts) => {
     // Registration period must be open */
 
       await contract.setRegistrationAccess(true);
-      await contract.setElectionAccess(true);
 
       let numberOfCandidates = await contract.numberOfCandidates.call();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
@@ -76,7 +76,6 @@ contract('Voting System Tests', async (accounts) => {
       // Election period must be open
       // Voting period must be open */
 
-      await contract.setElectionAccess(true);
 
       let votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, false, "Voter Registration open");
@@ -96,6 +95,16 @@ contract('Voting System Tests', async (accounts) => {
 
       await contract._registerVoter(owner, "John Derry", 18, {from:owner});
 
+    });
+
+    it('Allows a registered voter, to vote', async() => {
+
+      await contract.setVotingAccess(true);
+      await contract._registerVoter(owner, "John Wayne", 34);
+      let party = await contract.parties.call(1);
+      await contract.vote(party);
+      let count = await contract.getPartyCount("Labour");
+      assert.equal(count,1);
     });
 
 
