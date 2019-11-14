@@ -36,6 +36,7 @@ contract('Truffle Event Tests', async (accounts) => {
         truffleAssert.eventEmitted(tx,"LogNewVoter",(event) => {
           return(event._address == owner);
         });
+        truffleAssert.eventNotEmitted(tx,'LogNewCandidate');
     });
 
 });
