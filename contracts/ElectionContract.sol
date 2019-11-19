@@ -35,11 +35,12 @@ contract ElectionContract is Ownable {
 
     Election public election;
 
-    enum parties  {Conservative, Labour, LibDem, Green, Brexit }
+
+
 
     mapping(address => bool) isCandidateValid;
     mapping(address => bool) isVoterValid;
-    mapping(string => uint256) partyCount;
+    mapping(bytes32 => uint256) votesReceived;
 
     mapping(address => Voter) voters;
     mapping(address => Candidate) candidates;
@@ -48,8 +49,11 @@ contract ElectionContract is Ownable {
     uint public numberOfCandidates;
     uint public numberOfVoters;
 
+    bytes32[5] public parties;
+
 
     constructor() public {
+      parties[0] = ("Lab");
       election = Election(now, 1 days, 2 days, 2 days, true, false, false);
     }
 
@@ -100,8 +104,8 @@ contract ElectionContract is Ownable {
         _;
     }
 
-    modifier validVote(string memory _party) {
-      //require(_party == parties[0], "Vote must be from valid party");
+    modifier validParty(string memory _party) {
+      //require(_party == "Con" || "Lab" || "Lib" ||"Grn" ||"Brx");
       _;
     }
 
@@ -145,11 +149,11 @@ contract ElectionContract is Ownable {
 
     // Vote Functions
 
-    function vote(string memory _party) public
+    function vote(bytes32 _party) public
       votingPeriodIsOpen
       //validVote(_party)
       registeredVoter(msg.sender) {
-        partyCount[_party]++;
+        votesReceived[_party]++;
       }
 
     // Candidate Functions
@@ -164,10 +168,10 @@ contract ElectionContract is Ownable {
         return(voters[_address]);
     }
 
-    function getPartyCount(string memory _party) public view
+    function getPartyCount(bytes32 _party) public view
       onlyOwner
       returns (uint256) {
-          return(partyCount[_party]);
+          return(votesReceived[_party]);
       }
 
     // Set Election Period Functions
