@@ -22,20 +22,22 @@ contract('Truffle Event Tests', async (accounts) => {
 
     it(`Emmits LogNewCandidate event when RegisteredCandidate is called`, async() => {
       let tx = await contract._registerCandidate(owner, "John Major","Tory");
-
+      // Assert LogNewCandidate is emitted //
        truffleAssert.eventEmitted(tx, 'LogNewCandidate', (event) => {
          return (event._address == owner);
        });
+       // Assert LogNewVoter is not emitted //
        truffleAssert.eventNotEmitted(tx,'LogNewVoter');
 
     });
 
     it(`Emmits LogNewVoter event when _registerVoter is called `, async() => {
       let tx = await contract._registerVoter(owner, "Billy Rat", 33);
-
-        truffleAssert.eventEmitted(tx,"LogNewVoter",(event) => {
+        // Assert LogNewVoter is  emitted //
+        truffleAssert.eventEmitted(tx,'LogNewVoter',(event) => {
           return(event._address == owner);
         });
+        // Assert LogNewCandidate is not emitted //
         truffleAssert.eventNotEmitted(tx,'LogNewCandidate');
     });
 
