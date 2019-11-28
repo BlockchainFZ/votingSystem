@@ -89,7 +89,6 @@ contract('Voting System Tests', async (accounts) => {
 
       votingOpen = await contract.setVotingAccess(true,{from:owner});
       // Voting period is open //
-
       votingOpen = await contract.getVotingAccess.call();
       assert.equal(votingOpen, true, "Voter Registration closed");
 
@@ -101,9 +100,12 @@ contract('Voting System Tests', async (accounts) => {
 
       await contract.setVotingAccess(true);
       await contract._registerVoter(owner, "John Wayne", 34);
-      await contract.vote("Lab")
-      let count = await contract.getPartyCount("Lab");
-      assert.equal(count,1);
+      // Use bytes32 for party name;
+      let partyHex = web3.utils.utf8ToHex('Lab');
+      await contract.vote(partyHex);
+      let voteCount = await contract.getPartyCount(partyHex);
+      assert.equal(voteCount,1);
+
     });
 
 
