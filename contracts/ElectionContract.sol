@@ -35,12 +35,10 @@ contract ElectionContract is Ownable {
 
     Election public election;
 
-
-
-
     mapping(address => bool) isCandidateValid;
     mapping(address => bool) isVoterValid;
-    mapping(bytes32 => uint256) votesReceived;
+
+    mapping(bytes => uint) votesReceived;
 
     mapping(address => Voter) voters;
     mapping(address => Candidate) candidates;
@@ -49,11 +47,12 @@ contract ElectionContract is Ownable {
     uint public numberOfCandidates;
     uint public numberOfVoters;
 
-    bytes32[5] public parties;
-
+    //bytes32[] public parties;
 
     constructor() public {
-      parties[0] = ("Lab");
+    //  parties.push("Lab");
+      //["Lab","Con","Lib","Grn","Brx"];
+
       election = Election(now, 1 days, 2 days, 2 days, true, false, false);
     }
 
@@ -61,10 +60,6 @@ contract ElectionContract is Ownable {
 
     event LogNewCandidate(address _address, string _name, string _party);
     event LogNewVoter(address _address, string _name, uint _age);
-
-
-
-
 
 
     // modifiers
@@ -104,10 +99,12 @@ contract ElectionContract is Ownable {
         _;
     }
 
-    modifier validParty(string memory _party) {
-      //require(_party == "Con" || "Lab" || "Lib" ||"Grn" ||"Brx");
-      _;
+    modifier validParty(string memory _name){
+        require(validPartyStrings(_name) == true);
+        _;
     }
+
+
 
 
     //  Registration Functions
@@ -149,12 +146,21 @@ contract ElectionContract is Ownable {
 
     // Vote Functions
 
-    function vote(bytes32 _party) public
-      votingPeriodIsOpen
-      //validVote(_party)
-      registeredVoter(msg.sender) {
-        votesReceived[_party]++;
-      }
+    function vote(string memory _name) public
+    votingPeriodIsOpen
+    validParty(_name)
+    registeredVoter(msg.sender) {
+      bytes memory name = bytes(_name);
+      votesReceived[name]++;
+    }
+
+
+    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
+        return(voters[_address]);
+    }
+
+
+
 
     // Candidate Functions
 
@@ -162,17 +168,17 @@ contract ElectionContract is Ownable {
         return(isCandidateValid[_address]);
     }
 
-    // voting Functions
+    // Party Functions
 
-    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
-        return(voters[_address]);
+    function getPartyCount(string memory _name) public view
+      onlyOwner
+      validParty( _name)
+      returns (uint) {
+        bytes memory name = bytes(_name);
+        return votesReceived[name];
     }
 
-    function getPartyCount(bytes32 _party) public view
-      onlyOwner
-      returns (uint256) {
-          return(votesReceived[_party]);
-      }
+
 
     // Set Election Period Functions
 
@@ -204,7 +210,20 @@ contract ElectionContract is Ownable {
             return election.openElectionPeriod;
     }
 
+    // Helper Functions
 
+    function validPartyStrings(string memory _party) public pure returns (bool) {
+
+        bytes memory con = "Con";
+        bytes memory lab = "Lab";
+        bytes memory lib = "Lib";
+
+
+        return keccak256(bytes(_party)) == keccak256(bytes(con))  ||
+               keccak256(bytes(_party)) == keccak256(bytes(lab))  ||
+               keccak256(bytes(_party)) == keccak256(bytes(lib));
+
+    }
 
     function kill() onlyOwner external {
       selfdestruct(msg.sender);
