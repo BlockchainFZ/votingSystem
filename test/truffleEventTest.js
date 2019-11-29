@@ -14,6 +14,7 @@ contract('Truffle Event Tests', async (accounts) => {
       contract = await ElectionContract.new({ from:owner});
       contract.setElectionAccess(true);
       contract.setVotingAccess(true);
+
     });
 
     afterEach(async () => {
@@ -40,5 +41,17 @@ contract('Truffle Event Tests', async (accounts) => {
         // Assert LogNewCandidate is not emitted //
         truffleAssert.eventNotEmitted(tx,'LogNewCandidate');
     });
+
+    it(`Emmits LogVote event when vote is cast` , async() => {
+
+  //    let ty = await contract._registerVoter(owner, "Billy Rat", 33);
+      let tx = await contract.vote("Con");
+      // Assert LogVote is emitted //
+      truffleAssert.eventEmitted(tx,'LogVote',(event) => {
+        return(true);
+      });
+      // Assert LogVote is not emitted //
+      truffleAssert.eventNotEmitted(tx, 'LogVote');
+    })
 
 });

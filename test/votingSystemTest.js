@@ -100,10 +100,9 @@ contract('Voting System Tests', async (accounts) => {
 
       await contract.setVotingAccess(true);
       await contract._registerVoter(owner, "John Wayne", 34);
-      // Use bytes32 for party name;
-      let partyHex = web3.utils.utf8ToHex('Lab');
-      await contract.vote(partyHex);
-      let voteCount = await contract.getPartyCount(partyHex);
+      let party = "Con";
+      await contract.vote(party);
+      let voteCount = await contract.getPartyCount(party);
       assert.equal(voteCount,1);
 
     });
