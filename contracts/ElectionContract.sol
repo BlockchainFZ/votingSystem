@@ -50,8 +50,7 @@ contract ElectionContract is Ownable {
     //bytes32[] public parties;
 
     constructor() public {
-    //  parties.push("Lab");
-      //["Lab","Con","Lib","Grn","Brx"];
+
 
       election = Election(now, 1 days, 2 days, 2 days, true, false, false);
     }
@@ -60,6 +59,7 @@ contract ElectionContract is Ownable {
 
     event LogNewCandidate(address _address, string _name, string _party);
     event LogNewVoter(address _address, string _name, uint _age);
+    event LogVote(string _name);
 
 
     // modifiers
@@ -95,12 +95,12 @@ contract ElectionContract is Ownable {
     }
 
     modifier registeredVoter(address _address) {
-        require(voters[_address]._address != address(0), "Voter is not registered only once");
+        require(voters[_address]._address != address(0), "Voter is registered only once");
         _;
     }
 
     modifier validParty(string memory _name){
-        require(validPartyStrings(_name) == true);
+        require(validPartyStrings(_name) == true, "Invalid Party name");
         _;
     }
 
@@ -149,17 +149,19 @@ contract ElectionContract is Ownable {
     function vote(string memory _name) public
     votingPeriodIsOpen
     validParty(_name)
-    registeredVoter(msg.sender) {
+    unregisteredVoter(msg.sender)
+    {
+
       bytes memory name = bytes(_name);
       votesReceived[name]++;
+      //emit LogVote(_name);
+
     }
 
 
     function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
         return(voters[_address]);
     }
-
-
 
 
     // Candidate Functions
@@ -209,6 +211,8 @@ contract ElectionContract is Ownable {
     function getElectionAccess() public view onlyOwner returns (bool) {
             return election.openElectionPeriod;
     }
+
+
 
     // Helper Functions
 
