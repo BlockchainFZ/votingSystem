@@ -42,6 +42,7 @@ contract ElectionContract is Ownable {
 
     mapping(address => Voter) voters;
     mapping(address => Candidate) candidates;
+    mapping(bytes => uint256) fundedParties;
 
 
     uint public numberOfCandidates;
@@ -109,6 +110,11 @@ contract ElectionContract is Ownable {
       _;
     }
 
+    modifier minimumFund(uint256 _amount) {
+        require (_amount >= 1);
+        _;
+    }
+
 
 
 
@@ -173,6 +179,18 @@ contract ElectionContract is Ownable {
 
 
     // Candidate Functions
+
+    function fundPartyCampaign(address _address, string memory _party, uint256 _amount) public payable
+        registrationPeriodIsOpen
+        electionPeriodIsOpen
+        registeredCandidate(_address)
+        validParty(_party)
+        minimumFund(_amount)
+        {
+            bytes memory party = bytes(_party);
+            fundedParties[party] += _amount;
+        }
+
 
     function getCandidate(address _address) public view registeredCandidate(_address) returns(bool) {
         return(isCandidateValid[_address]);
