@@ -98,6 +98,7 @@ contract('Voting System Tests', async (accounts) => {
 
     it('Allows a registered voter, to vote', async() => {
 
+      // register voter, cast vote
       await contract.setVotingAccess(true);
       await contract._registerVoter(owner, "John Wayne", 34);
       let party = "Con";
