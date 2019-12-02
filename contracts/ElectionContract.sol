@@ -80,7 +80,7 @@ contract ElectionContract is Ownable {
     }
 
     modifier registeredCandidate(address _address) {
-      require(isCandidateValid[_address] == true, "Candidate is invalid");
+      require(isCandidateValid[_address] == true, "Candidate is not registered");
       _;
     }
 
@@ -90,12 +90,12 @@ contract ElectionContract is Ownable {
     }
 
     modifier unregisteredVoter(address _address) {
-        require(voters[_address]._address == address(0), "Voter can already registered only once");
+        require(voters[_address]._address == address(0), "Voter is already registered");
         _;
     }
 
     modifier registeredVoter(address _address) {
-        require(voters[_address]._address != address(0), "Voter is registered only once");
+        require(voters[_address]._address != address(0), "Voter is not registered");
         _;
     }
 
@@ -103,6 +103,13 @@ contract ElectionContract is Ownable {
         require(validPartyStrings(_name) == true, "Invalid Party name");
         _;
     }
+
+    modifier validVoter(address _address) {
+      require(isVoterValid[_address] == true, "Voter is either unregistered, or has already voted");
+      _;
+    }
+
+
 
 
 
@@ -149,13 +156,14 @@ contract ElectionContract is Ownable {
     function vote(string memory _name) public
     votingPeriodIsOpen
     validParty(_name)
-    unregisteredVoter(msg.sender)
+    registeredVoter(msg.sender)
+    validVoter(msg.sender)
     {
 
+      emit LogVote(_name);
+      isVoterValid[msg.sender] = false;
       bytes memory name = bytes(_name);
       votesReceived[name]++;
-      //emit LogVote(_name);
-
     }
 
 
