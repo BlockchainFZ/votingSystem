@@ -70,7 +70,7 @@ contract('Voting System Tests', async (accounts) => {
     });
 
 
-      it('Allows any Address to Register voter', async() => {
+    it('Allows any Address to Register voter', async() => {
 
       /* Only Owner has access to set registration voter
       // Election period must be open
@@ -114,6 +114,13 @@ contract('Voting System Tests', async (accounts) => {
       await contract.fundPartyCampaign(owner,"Con",1);
       let amount = await contract.getPartyFund("Con");
       assert.equal(amount,1);
+    });
+
+    it(`Confirms getCandidate returns a registered candidate`, async() => {
+      await contract.setRegistrationAccess(true);
+      await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
+      let candidate = await contract.getCandidate(account2);
+      assert.equal(account2,candidate[0],"Registered candidate is returned");
     });
 
 
