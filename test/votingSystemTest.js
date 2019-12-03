@@ -108,6 +108,14 @@ contract('Voting System Tests', async (accounts) => {
 
     });
 
+    it(`Allows a registered Candidate to fund a party`, async() =>{
+      await contract.setRegistrationAccess(true);
+      await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
+      await contract.fundPartyCampaign(owner,"Con",1);
+      let amount = await contract.getPartyFund("Con");
+      assert.equal(amount,1);
+    });
+
 
 
 
