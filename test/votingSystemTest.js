@@ -102,7 +102,8 @@ contract('Voting System Tests', async (accounts) => {
       await contract.setVotingAccess(true);
       await contract._registerVoter(owner, "John Wayne", 34);
       let party = "Con";
-      await contract.vote(party);
+      let voter = await contract.getVoter(owner);
+      let vote = await contract.vote("Con",voter);
       let voteCount = await contract.getPartyCount(party);
       assert.equal(voteCount,1);
 

@@ -45,7 +45,8 @@ contract('Truffle Event Tests', async (accounts) => {
     it(`Emmits LogVote event when vote is cast` , async() => {
 
       await contract._registerVoter(owner, "Billy Rat", 33);
-      let tx = await contract.vote("Con");
+      let voter = await contract.getVoter(owner);
+      let tx = await contract.vote("Con",voter);
       // Assert LogVote is emitted //
       truffleAssert.eventEmitted(tx,'LogVote',(event) => {
         return(event._name == "Con");

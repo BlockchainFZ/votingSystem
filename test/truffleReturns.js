@@ -31,13 +31,14 @@ contract('Returns System Tests', async (accounts) => {
     it(`Confirms getPartyCount returns the number of votes for requested party`, async() =>{
       await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
       await contract._registerVoter(account2, "Bob Geledo", 60);
-      await contract.vote("Con");
+      let voter = await contract.getVoter(owner);
+      let vote = await contract.vote("Con",voter);
       let voteCount = await contract.getPartyCount("Con");
       assert.equal(voteCount,1);
 
     });
 
-    it(`Confirms a voter can be `)
+  //  it(`Confirms a voter can be `)
 
 
 

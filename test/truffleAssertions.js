@@ -66,19 +66,19 @@ contract('Truffle Assertion Tests', async (accounts) => {
       // Open an election, Open Voting, cast vote
       await contract.setElectionAccess(true);
       await contract.setVotingAccess(true);
-      await truffleAssert.reverts(contract.vote("Con"), "Voter is not registered");
+      await truffleAssert.reverts(contract.getVoter(owner), "Voter is not registered");
 
     });
 
-    it('Demostrates a voter only vote once', async() => {
+    it('Demonstrates a voter can only vote once', async() => {
       // Open an election, Open Voting, cast vote, attempt to vote twice
       await contract.setElectionAccess(true);
       await contract.setVotingAccess(true);
       await contract._registerVoter(owner, "Dave McBade", 45);
-      await contract.vote("Con");
-      await truffleAssert.reverts(contract.vote("Lab"), "Voter is either unregistered, or has already voted");
+      let voter = await contract.getVoter(owner);
+      await contract.vote("Con",voter);
+      await truffleAssert.reverts(contract.vote("Lab",voter), "Voter is either unregistered, or has already voted");
     });
-
 
 
 
