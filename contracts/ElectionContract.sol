@@ -161,13 +161,15 @@ contract ElectionContract is Ownable {
 
     // Vote Functions
 
-    function vote(string memory _name) public
+    function vote(string memory _name, Voter memory _voter) public
     votingPeriodIsOpen
     validParty(_name)
     registeredVoter(msg.sender)
     validVoter(msg.sender)
     {
-      
+
+      _voter.hasVoted = true;
+      voters[msg.sender] = _voter;
       emit LogVote(_name);
       isVoterValid[msg.sender] = false;
       bytes memory name = bytes(_name);
