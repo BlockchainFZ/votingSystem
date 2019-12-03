@@ -143,7 +143,6 @@ contract ElectionContract is Ownable {
     function _registerVoter(address _address, string memory _name, uint _age) public
       votingPeriodIsOpen
       electionPeriodIsOpen
-      onlyOwner
       unregisteredVoter(msg.sender) {
 
         require(_age >= 18, "Voters must be over 18 to register");
@@ -174,12 +173,7 @@ contract ElectionContract is Ownable {
     }
 
 
-    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
-        return(voters[_address]);
-    }
-
-
-    // Candidate Functions
+    // Party Functions
 
     function fundPartyCampaign(address _address, string memory _party, uint256 _amount) public payable
         registrationPeriodIsOpen
@@ -194,11 +188,16 @@ contract ElectionContract is Ownable {
         }
 
 
-    function getCandidate(address _address) public view registeredCandidate(_address) returns(bool) {
-        return(isCandidateValid[_address]);
+    // Return functions
+
+
+    function getCandidate(address _address) public view registeredCandidate(_address) returns(Candidate memory) {
+        return(candidates[_address]);
     }
 
-    // Party Functions
+    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
+        return(voters[_address]);
+    }
 
     function getPartyCount(string memory _name) public view
       onlyOwner
@@ -212,6 +211,9 @@ contract ElectionContract is Ownable {
         bytes memory party = bytes(_party);
         return fundedParties[party];
     }
+
+
+
 
 
     // Set Election Period Functions
