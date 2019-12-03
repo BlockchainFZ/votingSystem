@@ -20,6 +20,7 @@ contract ElectionContract is Ownable {
         address _address;
         string name;
         uint age;
+        bool hasVoted;
 
     }
 
@@ -149,7 +150,8 @@ contract ElectionContract is Ownable {
         Voter memory newVoter = Voter({
             _address: msg.sender,
             name: _name,
-            age:_age
+            age:_age,
+            hasVoted:false
         });
         emit LogNewVoter(_address, _name, _age);
         voters[msg.sender] = newVoter;
@@ -165,7 +167,7 @@ contract ElectionContract is Ownable {
     registeredVoter(msg.sender)
     validVoter(msg.sender)
     {
-
+      
       emit LogVote(_name);
       isVoterValid[msg.sender] = false;
       bytes memory name = bytes(_name);
