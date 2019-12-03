@@ -25,7 +25,7 @@ contract('Truffle Event Tests', async (accounts) => {
       let tx = await contract._registerCandidate(owner, "John Major","Tory");
       // Assert LogNewCandidate is emitted //
        truffleAssert.eventEmitted(tx, 'LogNewCandidate', (event) => {
-         return (event._address == owner);
+         return (event._address == owner && event._name == "John Major" && event._party == "Tory");
        });
        // Assert LogNewVoter is not emitted //
        truffleAssert.eventNotEmitted(tx,'LogNewVoter');
@@ -36,7 +36,7 @@ contract('Truffle Event Tests', async (accounts) => {
       let tx = await contract._registerVoter(owner, "Billy Rat", 33);
         // Assert LogNewVoter is  emitted //
         truffleAssert.eventEmitted(tx,'LogNewVoter',(event) => {
-          return(event._address == owner);
+          return(event._name == "Billy Rat" && event._address == owner && event._age == 33);
         });
         // Assert LogNewCandidate is not emitted //
         truffleAssert.eventNotEmitted(tx,'LogNewCandidate');
@@ -53,5 +53,16 @@ contract('Truffle Event Tests', async (accounts) => {
       // Assert LogVote is not emitted //
       truffleAssert.eventNotEmitted(tx, 'LogNewCandidate');
     });
+
+    it(`Emits LogFundParty when a party is funded`, async() => {
+
+      await contract._registerCandidate(owner, "Billy Rat", "Con");
+      let tx = await contract.fundPartyCampaign(owner,"Con",1);
+      // Assert LogFundParty is eventEmitted //
+      truffleAssert.eventEmitted(tx, 'LogFundParty', (event) => {
+        return(event._address == owner && event._party == 'Con' && event._amount == 1);
+
+      });
+    })
 
 });

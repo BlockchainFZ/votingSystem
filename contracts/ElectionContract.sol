@@ -61,6 +61,7 @@ contract ElectionContract is Ownable {
     event LogNewCandidate(address _address, string _name, string _party);
     event LogNewVoter(address _address, string _name, uint _age);
     event LogVote(string _name);
+    event LogFundParty(address _address, string _party, uint256 _amount);
 
 
     // modifiers
@@ -187,6 +188,7 @@ contract ElectionContract is Ownable {
         validParty(_party)
         minimumFund(_amount)
         {
+            emit LogFundParty(_address, _party, _amount);
             bytes memory party = bytes(_party);
             fundedParties[party] += _amount;
         }
@@ -206,6 +208,10 @@ contract ElectionContract is Ownable {
         return votesReceived[name];
     }
 
+    function getPartyFund(string memory _party) public view returns (uint256 _amount) {
+        bytes memory party = bytes(_party);
+        return fundedParties[party];
+    }
 
 
     // Set Election Period Functions
