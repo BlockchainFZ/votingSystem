@@ -49,16 +49,18 @@ contract('Truffle Assertion Tests', async (accounts) => {
         await truffleAssert.reverts(contract._registerVoter(owner, "John Derry", 19), "Voting period is closed");
     });
 
-    it(`Demonstrates an invalid Candidate`, async() => {
+    it(`Demonstrates an unregistered Candidate`, async() => {
         // Attempt to retrieve candidate without opening an election//
-        await truffleAssert.reverts(contract.getCandidate(owner), "Candidate is not registered");
+        await contract.setElectionAccess(true);
+        await contract.setRegistrationAccess(true);
+        await truffleAssert.reverts(contract.fundPartyCampaign(owner, "Con", 2), "Candidate is not registered");
     });
 
-    it(`Demonstrates a Candidate is invalid`, async() =>{
+    it(`Demonstrates a Candidate can be registered only once`, async() =>{
         // Open an election, register a candidate, attempt to retrieve non registered candidate//
         await contract.setElectionAccess(true);
         await contract._registerCandidate(owner,"Boris Johnson", "Tory");
-        await truffleAssert.reverts(contract.getCandidate(account2), "Candidate is not registered");
+        await truffleAssert.reverts(contract._registerCandidate(owner,"Boris Johnson", "Tory"), "Candidate is already registered");
     });
 
 

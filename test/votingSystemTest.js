@@ -42,90 +42,86 @@ contract('Voting System Tests', async (accounts) => {
 
 
     it(`Allows Contract Owner to Register a Candidate`, async () => {
-
-    /* Only Owner has access to set registration access
-    // Election period must be open
-    // Registration period must be open */
-
+      /* Only Owner has access to set registration access
+      // Election period must be open
+      // Registration period must be open */
       await contract.setRegistrationAccess(true);
-
-      let numberOfCandidates = await contract.numberOfCandidates.call();
+      let numberOfCandidates = await contract.getNumberOfCandidates();
       assert.equal(numberOfCandidates, 0, "initial contract has 0 candidates");
 
       try {
           await contract._registerCandidate(account2,"John Smith", "Tory", {from:account2});
         } catch(err) {
-          //Only Owner has access to set registration access
-        }
 
+        }
       try {
           await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
       }   catch (err){
           // Only Owner has access to set registration access
       }
-
-          numberOfCandidates = await contract.numberOfCandidates.call();
+          numberOfCandidates = await contract.getNumberOfCandidates();
+          console.log(numberOfCandidates.toNumber());
           // Candidate has succseefully been registered
           assert.equal(numberOfCandidates, 1, "Contract has 1 candidate");
-    });
 
-
-    it('Allows any Address to Register voter', async() => {
-
-      /* Only Owner has access to set registration voter
-      // Election period must be open
-      // Voting period must be open */
-
-
-      let votingOpen = await contract.getVotingAccess.call();
-      assert.equal(votingOpen, false, "Voter Registration open");
-      // Voting period is open */
-
+          // Attemp to register a Candidate that is already registeredVoter
       try {
-         await contract._registerVoter(owner, "John Derry", 18);
-      }  catch(err) {
-         // Voting period is closed //
-      }
+              await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
+          }   catch (err){
+              // Owner has already registered as a candidate
+              //console.log("Owner has already registered as a candidate");
+          }
+    });
 
-      votingOpen = await contract.setVotingAccess(true,{from:owner});
-      // Voting period is open //
-      votingOpen = await contract.getVotingAccess.call();
-      assert.equal(votingOpen, true, "Voter Registration closed");
+      it('Allows any Address to Register voter', async() => {
+        /* Only Owner has access to set registration voter
+        // Election period must be open
+        // Voting period must be open */
+        let votingOpen = await contract.getVotingAccess.call();
+        assert.equal(votingOpen, false, "Voter Registration open");
+        // Voting period is open */
+        try {
+           await contract._registerVoter(owner, "John Derry", 18);
+        }  catch(err) {
+           // Voting period is closed //
+        }
+        votingOpen = await contract.setVotingAccess(true,{from:owner});
+        // Voting period is open //
+        votingOpen = await contract.getVotingAccess.call();
+        assert.equal(votingOpen, true, "Voter Registration closed");
+        await contract._registerVoter(owner, "John Derry", 18, {from:owner});
+    });
 
-      await contract._registerVoter(owner, "John Derry", 18, {from:owner});
+      it('Allows a registered voter, to vote', async() => {
+        // register voter, cast vote
+        await contract.setVotingAccess(true);
+        await contract._registerVoter(owner, "John Wayne", 34);
+        let party = "Con";
+        let voter = await contract.getVoter(owner);
+        let vote = await contract.vote("Con",voter);
+        let voteCount = await contract.getPartyCount(party);
+        assert.equal(voteCount,1);
 
     });
 
-    it('Allows a registered voter, to vote', async() => {
-
-      // register voter, cast vote
-      await contract.setVotingAccess(true);
-      await contract._registerVoter(owner, "John Wayne", 34);
-      let party = "Con";
-      let voter = await contract.getVoter(owner);
-      let vote = await contract.vote("Con",voter);
-      let voteCount = await contract.getPartyCount(party);
-      assert.equal(voteCount,1);
-
+      it(`Allows a registered Candidate to fund a party`, async() =>{
+        await contract.setRegistrationAccess(true);
+        await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
+        await contract.fundPartyCampaign(owner,"Con",1);
+        let amount = await contract.getPartyFund("Con");
+        assert.equal(amount,1);
     });
 
-    it(`Allows a registered Candidate to fund a party`, async() =>{
-      await contract.setRegistrationAccess(true);
-      await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
-      await contract.fundPartyCampaign(owner,"Con",1);
-      let amount = await contract.getPartyFund("Con");
-      assert.equal(amount,1);
+      it(`Confirms getCandidate returns a registered candidate`, async() => {
+        await contract.setRegistrationAccess(true);
+        await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
+        await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
+        let getOwner = await contract.getCandidate(0);
+        let candidate = await contract.getCandidate(1);
+        let count = await contract.getNumberOfCandidates();
+        assert.equal(owner,getOwner,"Registered candidate cannot be returned");
+        assert.equal(candidate ,account2,"Registered candidate cannot be returned");
+        assert.equal(count, 2, "Wrong number of registered candidates");
     });
 
-    it(`Confirms getCandidate returns a registered candidate`, async() => {
-      await contract.setRegistrationAccess(true);
-      await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
-      let candidate = await contract.getCandidate(account2);
-      assert.equal(account2,candidate[0],"Registered candidate is returned");
-    });
-
-
-
-
-
-  });
+});
