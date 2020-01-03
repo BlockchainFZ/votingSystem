@@ -11,10 +11,11 @@ contract ElectionContract is Ownable {
 
 
     struct candidateStruct {
-        address candidateAddress;
+        //address candidateAddress;
         string name;
         string party;
         uint index;
+        bool isCandidate;
     }
 
     struct Voter {
@@ -76,13 +77,14 @@ contract ElectionContract is Ownable {
     }
 
     modifier registeredCandidate(address _address) {
-        //require(candidateIndex[candidates[_address].index] == _address, "Candidate is not registered");
-        require(candidates[_address].candidateAddress == _address, "Candidate is not registered");
+        //require(candidateIndex[candidates[_address].isCandidate] == true, "Candidate is not registered");
+        require(candidates[_address].isCandidate == true, "Candidate is not registered");
         _;
     }
 
     modifier unregisteredCandidate(address _address) {
-        require(candidates[_address].candidateAddress == address(0),  "Candidate is already registered");
+        require(candidates[_address].isCandidate == false,  "Candidate is already registered");
+
         _;
   }
 
@@ -120,10 +122,11 @@ contract ElectionContract is Ownable {
       {
       //if(isCandidate(_address)) revert();
         candidateStruct memory candidate = candidateStruct({
-           candidateAddress:_address,
+           //candidateAddress:_address,
            name: _name,
            party:_party,
-           index: candidateIndex.push(_address) - 1
+           index: candidateIndex.push(_address) - 1,
+           isCandidate: true
         });
         emit LogNewCandidate(_address, _name, _party);
         candidates[_address] = candidate;
