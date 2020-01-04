@@ -9,45 +9,44 @@ contract ElectionContract is Ownable {
 
     using SafeMath for uint256;
 
-
     struct candidateStruct {
-        //address candidateAddress;
         string name;
         string party;
         uint index;
-        bool isCandidate;
     }
 
-    struct Voter {
-        address voterAddress;
+    struct voterStruct {
+        //address voterAddress;
         string name;
         uint age;
         bool hasVoted;
+        uint index;
+      }
 
-    }
-
-  struct Election {
-        uint256 electionTimeStamp;
-        uint256 registrationPeriod;
-        uint256 votingPeriod;
-        uint256 endTime;
-        bool openRegistrationPeriod;
-        bool openVotingPeriod;
-        bool openElectionPeriod;
+    struct Election {
+          uint256 electionTimeStamp;
+          uint256 registrationPeriod;
+          uint256 votingPeriod;
+          uint256 endTime;
+          bool openRegistrationPeriod;
+          bool openVotingPeriod;
+          bool openElectionPeriod;
     }
 
     Election public election;
 
-
-    mapping(address => bool) isVoterValid;
+    //mapping(address => bool) isVoterValid;
     mapping(bytes => uint) votesReceived;
-    mapping(address => Voter) voters;
+
     mapping(bytes => uint256) fundedParties;
 
-    uint public numberOfVoters;
+    //uint public numberOfVoters;
 
     mapping(address => candidateStruct) private candidates;
     address[] private candidateIndex;
+
+    mapping(address => voterStruct) private voters;
+    address[] private votersIndex;
 
     constructor() public {
       election = Election(now, 1 days, 2 days, 2 days, true, false, false);
@@ -76,26 +75,32 @@ contract ElectionContract is Ownable {
       _;
     }
 
-    modifier registeredCandidate(address _address) {
-        //require(candidateIndex[candidates[_address].isCandidate] == true, "Candidate is not registered");
-        require(candidates[_address].isCandidate == true, "Candidate is not registered");
+/*    modifier registeredCandidate(address _address) {
+        require(candidateIndex[candidates[_address].index] == _address, "Candidate is not registered");
+        //require(candidates[_address].isCandidate == true, "Candidate is not registered");
         _;
     }
 
     modifier unregisteredCandidate(address _address) {
-        require(candidates[_address].isCandidate == false,  "Candidate is already registered");
-
+        //require(candidates[_address].isCandidate == false,  "Candidate is already registered");
+        //require(candidates[_address] == _address);
+        require(candidateIndex[candidates[_address].index] == _address, "Candidate is not registered");
         _;
   }
-
+*
     modifier unregisteredVoter(address _address) {
-        require(voters[_address].voterAddress == address(0), "Voter is already registered");
+        require(voters[_address].isRegistered == false, "Voter is already registered");
         _;
     }
 
     modifier registeredVoter(address _address) {
-        require(voters[_address].voterAddress != address(0), "Voter is not registered");
+        require(voters[_address].isRegistered == true, "Voter is not registered");
         _;
+    }
+*/
+    modifier validVoter(address _address) {
+      require(voters[_address].hasVoted == false, "Voter is either unregistered, or has already voted");
+      _;
     }
 
     modifier validParty(string memory _name){
@@ -103,10 +108,7 @@ contract ElectionContract is Ownable {
         _;
     }
 
-    modifier validVoter(address _address) {
-      require(isVoterValid[_address] == true, "Voter is either unregistered, or has already voted");
-      _;
-    }
+
 
     modifier minimumFund(uint256 _amount) {
         require (_amount >= 1);
@@ -117,16 +119,14 @@ contract ElectionContract is Ownable {
     function _registerCandidate(address _address, string memory _name, string memory _party) public
       registrationPeriodIsOpen
       electionPeriodIsOpen
-      unregisteredCandidate(_address)
+      //unregisteredCandidate(_address)
       onlyOwner
       {
-      //if(isCandidate(_address)) revert();
+      if(isCandidate(_address)) revert();
         candidateStruct memory candidate = candidateStruct({
-           //candidateAddress:_address,
            name: _name,
            party:_party,
-           index: candidateIndex.push(_address) - 1,
-           isCandidate: true
+           index: candidateIndex.push(_address) - 1
         });
         emit LogNewCandidate(_address, _name, _party);
         candidates[_address] = candidate;
@@ -135,32 +135,33 @@ contract ElectionContract is Ownable {
     function _registerVoter(address _address, string memory _name, uint _age) public
       votingPeriodIsOpen
       electionPeriodIsOpen
-      unregisteredVoter(msg.sender) {
+      //unregisteredVoter(msg.sender)
+      {
+        if(isRegisteredVoter(_address)) revert();
         require(_age >= 18, "Voters must be over 18 to register");
-        Voter memory newVoter = Voter({
-            voterAddress: msg.sender,
+        voterStruct memory newVoter = voterStruct({
             name: _name,
             age:_age,
-            hasVoted:false
+            hasVoted: false,
+            index: votersIndex.push(_address) - 1
+
         });
         emit LogNewVoter(_address, _name, _age);
-        voters[msg.sender] = newVoter;
-        isVoterValid[msg.sender] = true;
-        numberOfVoters++;
-    }
+        voters[_address] = newVoter;
+      }
 
     // Vote Functions
 
-    function vote(string memory _name, Voter memory _voter) public
+    function vote(string memory _name) public
     votingPeriodIsOpen
     validParty(_name)
-    registeredVoter(msg.sender)
+    //registeredVoter(_voter)
     validVoter(msg.sender)
     {
-      _voter.hasVoted = true;
-      voters[msg.sender] = _voter;
+      if(!isRegisteredVoter(msg.sender)) revert();
+      voters[msg.sender].hasVoted = true;
       emit LogVote(_name);
-      isVoterValid[msg.sender] = false;
+
       bytes memory name = bytes(_name);
       votesReceived[name]++;
     }
@@ -169,10 +170,11 @@ contract ElectionContract is Ownable {
     function fundPartyCampaign(address _address, string memory _party, uint _amount) public payable
           registrationPeriodIsOpen
           electionPeriodIsOpen
-          registeredCandidate(_address)
+          //registeredCandidate(_address)
           validParty(_party)
           minimumFund(_amount)
         {
+            if(!isCandidate(_address)) revert();
             emit LogFundParty(_address, _party, _amount);
             bytes memory party = bytes(_party);
             fundedParties[party] += _amount;
@@ -180,8 +182,13 @@ contract ElectionContract is Ownable {
 
     // Return functions
     function isCandidate(address _candidateAddress) public view returns (bool _isIndeed) {
-      //if(candidateIndex.length == 0) return false;
+      if(candidateIndex.length == 0) return false;
       return (candidateIndex[candidates[_candidateAddress].index] == _candidateAddress);
+    }
+
+    function isRegisteredVoter(address _voterAddress) public view returns (bool _isIndeed) {
+      if(votersIndex.length == 0) return false;
+      return (votersIndex[voters[_voterAddress].index] == _voterAddress);
     }
 
     function getNumberOfCandidates() public view returns (uint _amount) {
@@ -192,8 +199,8 @@ contract ElectionContract is Ownable {
         return(candidateIndex[_index]);
     }
 
-    function getVoter(address _address) public view registeredVoter(_address) returns(Voter memory){
-        return(voters[_address]);
+    function getVoter(uint _index) public view returns(address _address){
+        return(votersIndex[_index]);
     }
 
     function getPartyCount(string memory _name) public view
