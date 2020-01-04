@@ -25,14 +25,13 @@ contract('Returns System Tests', async (accounts) => {
 
       await contract._registerCandidate(account2,"James Smith", "Tory", {from:owner});
       let candidate = await contract.getCandidate(0);
-      assert.equal(account2,candidate,"Registered candidate is returned");
+      assert.equal(account2,candidate, "Registered candidate is returned");
     });
 
     it(`Confirms getPartyCount returns the number of votes for requested party`, async() =>{
       await contract._registerCandidate(owner,"James Smith", "Tory", {from:owner});
       await contract._registerVoter(account2, "Bob Geledo", 60);
-      let voter = await contract.getVoter(owner);
-      let vote = await contract.vote("Con",voter);
+      let vote = await contract.vote("Con", {from:account2});
       let voteCount = await contract.getPartyCount("Con");
       assert.equal(voteCount,1);
 
